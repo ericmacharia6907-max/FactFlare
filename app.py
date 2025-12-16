@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, send_file
+from flask import Flask, render_template, request, jsonify
 import json
 import os
 import random
@@ -7,6 +7,13 @@ app = Flask(__name__)
 
 current_deck = None
 viewed = set()
+
+# Load default deck
+sample_path = os.path.join('decks', 'Sample_Facts.json')
+if os.path.exists(sample_path):
+    with open(sample_path, 'r') as f:
+        current_deck = json.load(f)
+    viewed = set()
 
 @app.route('/')
 def index():
@@ -54,19 +61,11 @@ def load_sample():
         return jsonify({'status': 'success', 'deckName': data['deckName'], 'count': len(data['facts'])})
     return jsonify({'status': 'error', 'message': 'Sample deck not found'})
 
-@app.route('/download_sample')
-def download_sample():
-    sample_path = os.path.join('decks', 'Sample_Facts.json')
-    if os.path.exists(sample_path):
-        return send_file(sample_path, as_attachment=True, download_name='Sample_Facts.json')
-    return jsonify({'error': 'Sample deck not found'})
-
-@app.route('/download/<deck_name>')
-def download_deck(deck_name):
-    deck_path = os.path.join('decks', f'{deck_name}.json')
-    if os.path.exists(deck_path):
-        return send_file(deck_path, as_attachment=True, download_name=f'{deck_name}.json')
-    return jsonify({'error': 'Deck not found'})
+@app.route('/get_status')
+def get_status():
+    if current_deck:
+        return jsonify({'loaded': True, 'deckName': current_deck['deckName'], 'count': len(current_deck['facts'])})
+    return jsonify({'loaded': False})
 
 @app.route('/next_fact')
 def next_fact():

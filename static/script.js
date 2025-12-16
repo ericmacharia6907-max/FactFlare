@@ -10,6 +10,20 @@ card.addEventListener('click', nextFact);
 exportBtn.addEventListener('click', exportDeck);
 loadSampleBtn.addEventListener('click', loadSampleDeck);
 
+window.onload = async () => {
+    try {
+        const response = await fetch('/get_status');
+        const data = await response.json();
+        if (data.loaded) {
+            statusDiv.textContent = `Deck loaded: ${data.deckName} (${data.count} facts)`;
+            exportBtn.style.display = 'inline-block';
+            await nextFact(); // Load first fact
+        }
+    } catch (error) {
+        console.error('Error checking status');
+    }
+};
+
 async function handleUpload(e) {
     e.preventDefault();
     const formData = new FormData(uploadForm);
