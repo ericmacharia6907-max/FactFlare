@@ -42,6 +42,18 @@ def export():
         return jsonify(current_deck)
     return jsonify({'error': 'No deck loaded'})
 
+@app.route('/load_sample')
+def load_sample():
+    sample_path = os.path.join('decks', 'Sample_Facts.json')
+    if os.path.exists(sample_path):
+        with open(sample_path, 'r') as f:
+            data = json.load(f)
+        global current_deck, viewed
+        current_deck = data
+        viewed = set()
+        return jsonify({'status': 'success', 'deckName': data['deckName'], 'count': len(data['facts'])})
+    return jsonify({'status': 'error', 'message': 'Sample deck not found'})
+
 @app.route('/next_fact')
 def next_fact():
     if not current_deck:

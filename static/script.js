@@ -3,10 +3,12 @@ const factText = document.getElementById('fact-text');
 const uploadForm = document.getElementById('upload-form');
 const exportBtn = document.getElementById('export-btn');
 const statusDiv = document.getElementById('status');
+const loadSampleBtn = document.getElementById('load-sample-btn');
 
 uploadForm.addEventListener('submit', handleUpload);
 card.addEventListener('click', nextFact);
 exportBtn.addEventListener('click', exportDeck);
+loadSampleBtn.addEventListener('click', loadSampleDeck);
 
 async function handleUpload(e) {
     e.preventDefault();
@@ -64,5 +66,21 @@ async function exportDeck() {
         URL.revokeObjectURL(url);
     } catch (error) {
         alert('Error exporting deck');
+    }
+}
+
+async function loadSampleDeck() {
+    try {
+        const response = await fetch('/load_sample');
+        const data = await response.json();
+        if (data.status === 'success') {
+            statusDiv.textContent = `Deck loaded: ${data.deckName} (${data.count} facts)`;
+            exportBtn.style.display = 'inline-block';
+            await nextFact(); // Load first fact
+        } else {
+            statusDiv.textContent = `Error: ${data.message}`;
+        }
+    } catch (error) {
+        statusDiv.textContent = 'Error loading sample deck';
     }
 }
