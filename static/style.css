@@ -1,8 +1,10 @@
-body {
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+html, body {
+    height: 100%;
     margin: 0;
     padding: 0;
+    padding-top: 80px; /* Space for h1 */
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -19,13 +21,15 @@ body {
     100% { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
 }
 
+}
+
 .container {
     text-align: center;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95);
     padding: 30px;
     border-radius: 20px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-    max-width: 400px;
+    max-width: 500px;
     width: 90%;
     animation: containerGlow 5s ease-in-out infinite alternate;
 }
@@ -36,13 +40,20 @@ body {
 }
 
 h1 {
-    margin-bottom: 20px;
-    font-size: 2.5em;
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    font-size: 3em;
+    font-family: 'Cinzel', serif;
     background: linear-gradient(45deg, #667eea, #764ba2);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-shadow: none;
     animation: textGlow 3s ease-in-out infinite alternate;
+    z-index: 10;
 }
 
 @keyframes textGlow {
@@ -108,6 +119,7 @@ h1 {
     font-size: 1.2em;
     line-height: 1.4;
     margin: 0;
+    font-weight: bold;
     transition: opacity 0.5s;
     animation: textColor 5s linear infinite;
 }
