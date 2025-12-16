@@ -1,0 +1,15 @@
+{
+  "deckName": "Tech Facts",
+  "facts": [
+    "The first computer mouse was invented in 1964 by Douglas Engelbart.",
+    "The term 'debugging' comes from Admiral Grace Hopper, who found a moth in a computer in 1947.",
+    "The first email was sent in 1971 by Ray Tomlinson.",
+    "Python was created by Guido van Rossum and first released in 1991.",
+    "The World Wide Web was invented by Tim Berners-Lee in 1989.",
+    "Bitcoin, the first cryptocurrency, was created in 2009 by Satoshi Nakamoto.",
+    "The first smartphone was the IBM Simon Personal Communicator, released in 1994.",
+    "JavaScript was created by Brendan Eich in just 10 days in 1995.",
+    "The first programming language was Ada Lovelace's work on the Analytical Engine in the 1840s.",
+    "Linux was created by Linus Torvalds in 1991."
+  ]
+}

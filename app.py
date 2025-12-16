@@ -61,6 +61,13 @@ def download_sample():
         return send_file(sample_path, as_attachment=True, download_name='Sample_Facts.json')
     return jsonify({'error': 'Sample deck not found'})
 
+@app.route('/download/<deck_name>')
+def download_deck(deck_name):
+    deck_path = os.path.join('decks', f'{deck_name}.json')
+    if os.path.exists(deck_path):
+        return send_file(deck_path, as_attachment=True, download_name=f'{deck_name}.json')
+    return jsonify({'error': 'Deck not found'})
+
 @app.route('/next_fact')
 def next_fact():
     if not current_deck:
