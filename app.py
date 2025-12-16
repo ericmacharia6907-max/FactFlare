@@ -69,6 +69,26 @@ def get_status():
         return jsonify({'loaded': True, 'deckName': current_deck['deckName'], 'count': len(current_deck['facts'])})
     return jsonify({'loaded': False})
 
+@app.route('/list_decks')
+def list_decks():
+    try:
+        decks = []
+        for file in os.listdir(BASE_DIR + '/decks'):
+            if file.endswith('.json'):
+                decks.append(file.replace('.json', ''))
+        return jsonify(decks)
+    except:
+        return jsonify([])
+
+@app.route('/get_deck/<deck_name>')
+def get_deck(deck_name):
+    deck_path = os.path.join(BASE_DIR, 'decks', f'{deck_name}.json')
+    if os.path.exists(deck_path):
+        with open(deck_path, 'r') as f:
+            data = json.load(f)
+        return jsonify(data)
+    return jsonify({'error': 'Deck not found'})
+
 @app.route('/next_fact')
 def next_fact():
     if not current_deck:

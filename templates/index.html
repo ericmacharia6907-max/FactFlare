@@ -19,6 +19,25 @@
         </form>
         <button id="load-sample-btn">Load Sample Deck</button>
         <button id="export-btn">Export Deck</button>
+        <button id="share-btn">Share Fact</button>
+        <button id="stats-btn">View Stats</button>
+        <div id="progress">
+            <div>Facts viewed: 0 / 0</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        <div id="deck-library" style="display:none;">
+            <h4>Saved Decks</h4>
+            <div id="deck-list"></div>
+        </div>
+        <button id="toggle-deck-library">Toggle Deck Library</button>
+        <div id="stats" style="display:none;"></div>
+        <div id="theme-switcher">
+            <button id="theme-classic">Classic</button>
+            <button id="theme-dark">Dark</button>
+            <button id="theme-neon">Neon</button>
+        </div>
         <div id="status"></div>
     </div>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
