@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 import json
 import os
 import random
@@ -53,6 +53,13 @@ def load_sample():
         viewed = set()
         return jsonify({'status': 'success', 'deckName': data['deckName'], 'count': len(data['facts'])})
     return jsonify({'status': 'error', 'message': 'Sample deck not found'})
+
+@app.route('/download_sample')
+def download_sample():
+    sample_path = os.path.join('decks', 'Sample_Facts.json')
+    if os.path.exists(sample_path):
+        return send_file(sample_path, as_attachment=True, download_name='Sample_Facts.json')
+    return jsonify({'error': 'Sample deck not found'})
 
 @app.route('/next_fact')
 def next_fact():
