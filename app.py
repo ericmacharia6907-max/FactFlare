@@ -5,11 +5,13 @@ import random
 
 app = Flask(__name__)
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 current_deck = None
 viewed = set()
 
 # Load default deck
-sample_path = os.path.join('decks', 'Sample_Facts.json')
+sample_path = os.path.join(BASE_DIR, 'decks', 'Sample_Facts.json')
 if os.path.exists(sample_path):
     with open(sample_path, 'r') as f:
         current_deck = json.load(f)
@@ -28,7 +30,7 @@ def upload():
             if 'deckName' in data and 'facts' in data and isinstance(data['facts'], list) and data['facts']:
                 # Save to decks/
                 filename = data['deckName'].replace(' ', '_') + '.json'
-                filepath = os.path.join('decks', filename)
+                filepath = os.path.join(BASE_DIR, 'decks', filename)
                 with open(filepath, 'w') as f:
                     json.dump(data, f)
                 global current_deck, viewed
@@ -51,7 +53,7 @@ def export():
 
 @app.route('/load_sample')
 def load_sample():
-    sample_path = os.path.join('decks', 'Sample_Facts.json')
+    sample_path = os.path.join(BASE_DIR, 'decks', 'Sample_Facts.json')
     if os.path.exists(sample_path):
         with open(sample_path, 'r') as f:
             data = json.load(f)
