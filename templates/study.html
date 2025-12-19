@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Study - FactFlare{% endblock %}
+
+{% block content %}
+<div class="study-page">
+
+    <!-- Study Mode Selection -->
+    <div class="study-modes">
+        <h3>Study Mode</h3>
+        <div class="mode-buttons">
+            <button id="mode-spaced" class="mode-btn active" data-mode="spaced">Spaced Repetition</button>
+            <button id="mode-review" class="mode-btn" data-mode="review">Review All</button>
+            <button id="mode-cram" class="mode-btn" data-mode="cram">Cram Mode</button>
+            <button id="mode-random" class="mode-btn" data-mode="random">Random</button>
+        </div>
+    </div>
+
+    <!-- Deck Selection -->
+    <div class="deck-selection">
+        <h3>Select Deck</h3>
+        <div class="deck-controls">
+            <button id="load-sample-btn" class="btn">Load Sample Deck</button>
+            <div id="deck-list" class="deck-list"></div>
+        </div>
+    </div>
+
+    <!-- Main Study Interface -->
+    <div class="study-interface" id="study-interface" style="display: none;">
+        <!-- Flashcard -->
+        <div class="card" id="card">
+            <div class="card-inner">
+                <div class="card-front">
+                    <p id="fact-text"></p>
+                    <div id="fact-image" class="fact-image hidden"></div>
+                </div>
+                <div class="card-back">
+                    <p id="fact-text-back"></p>
+                    <div id="fact-image-back" class="fact-image hidden"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Answer Quality Buttons (for Spaced Repetition) -->
+        <div id="answer-buttons" class="answer-buttons hidden">
+            <p>How well did you know this?</p>
+            <div class="quality-buttons">
+                <button class="quality-btn" data-quality="0">Complete Blackout</button>
+                <button class="quality-btn" data-quality="1">Incorrect (hard)</button>
+                <button class="quality-btn" data-quality="2">Incorrect (easy)</button>
+                <button class="quality-btn" data-quality="3">Correct (difficult)</button>
+                <button class="quality-btn" data-quality="4">Correct (easy)</button>
+                <button class="quality-btn" data-quality="5">Perfect Response</button>
+            </div>
+        </div>
+
+        <!-- Study Controls -->
+        <div class="controls">
+            <button id="shuffle-btn" class="btn">Shuffle: Off</button>
+            <button id="share-btn" class="btn">Share Fact</button>
+            <button id="speak-btn" class="btn">🔊 Speak</button>
+        </div>
+
+        <!-- Custom Session Controls -->
+        <div class="session-controls">
+            <button id="toggle-session" class="btn">Custom Session</button>
+            <div id="session-panel" class="hidden">
+                <div class="session-options">
+                    <div class="option-row">
+                        <label>Fact Limit:</label>
+                        <input type="number" id="fact-limit" min="1" placeholder="No limit">
+                    </div>
+                    <div class="option-row">
+                        <label>Time Limit (min):</label>
+                        <input type="number" id="time-limit" min="1" placeholder="No limit">
+                    </div>
+                    <div class="option-row">
+                        <label>Filter by Tags:</label>
+                        <input type="text" id="tag-filter" placeholder="tag1,tag2">
+                    </div>
+                </div>
+                <div class="session-actions">
+                    <button id="start-session" class="btn">Start Session</button>
+                    <button id="end-session" class="btn hidden">End Session</button>
+                </div>
+                <div id="session-progress" class="session-progress hidden"></div>
+            </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="progress">
+            <div>Facts viewed: <span id="viewed-count">0</span> / <span id="total-count">0</span></div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="status" class="status"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+{% endblock %}

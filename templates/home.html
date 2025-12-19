@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Home - FactFlare{% endblock %}
+
+{% block content %}
+<div class="home-page">
+    <div class="hero-section">
+        <p class="hero-subtitle">Master knowledge through intelligent spaced repetition</p>
+    </div>
+
+    <div class="stats-summary">
+        <h2>Your Progress</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📚</div>
+                <div class="stat-content">
+                    <div class="stat-number" id="total-facts">0</div>
+                    <div class="stat-label">Total Facts</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-content">
+                    <div class="stat-number" id="reviewed-facts">0</div>
+                    <div class="stat-label">Reviewed</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-content">
+                    <div class="stat-number" id="current-streak">0</div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-content">
+                    <div class="stat-number" id="total-xp">0</div>
+                    <div class="stat-label">XP Earned</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="quick-actions">
+        <h2>Quick Actions</h2>
+        <div class="action-buttons">
+            <a href="{{ url_for('study') }}" class="action-btn primary">
+                <span class="action-icon">📖</span>
+                Start Studying
+            </a>
+            <a href="{{ url_for('data') }}" class="action-btn secondary">
+                <span class="action-icon">📊</span>
+                Manage Data
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load user progress stats
+    fetch('/get_progress')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('total-facts').textContent = data.total_facts_viewed || 0;
+            document.getElementById('reviewed-facts').textContent = data.total_facts_viewed || 0;
+            document.getElementById('current-streak').textContent = data.current_streak || 0;
+            document.getElementById('total-xp').textContent = data.total_xp || 0;
+        })
+        .catch(error => console.error('Error loading progress:', error));
+});
+</script>
+{% endblock %}

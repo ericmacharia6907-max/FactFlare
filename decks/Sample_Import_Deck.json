@@ -1,0 +1,10 @@
+{
+  "deckName": "Sample Deck",
+  "facts": [
+    "The capital of France is Paris.",
+    "Water boils at 100°C (212°F) at sea level.",
+    "The largest planet in our solar system is Jupiter.",
+    "The chemical symbol for gold is Au.",
+    "The Great Wall of China is visible from space is a myth."
+  ]
+}

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FactFlare - Stats</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>FactFlare - Stats</h1>
+    <nav>
+        <a href="{{ url_for('home') }}">Home</a> |
+        <a href="{{ url_for('upload_page') }}">Upload Deck</a> |
+        <a href="{{ url_for('decks_page') }}">Deck Library</a> |
+        <a href="{{ url_for('stats_page') }}">Stats</a>
+    </nav>
+    <div class="container">
+        <div id="stats"></div>
+        <div id="status"></div>
+    </div>
+    <script src="{{ url_for('static', filename='stats.js') }}"></script>
+</body>
+</html>

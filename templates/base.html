@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FactFlare{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="header">
+        <button id="dashboard-toggle" class="dashboard-btn">
+            <span class="dashboard-icon">☰</span>
+            Dashboard
+        </button>
+        <div class="header-title">
+            <h1>FactFlare</h1>
+        </div>
+    </div>
+
+    <div class="sidebar sidebar-hidden">
+        <div class="sidebar-header">
+            <h2>FactFlare</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('home') }}" class="nav-link {% if request.endpoint == 'home' %}active{% endif %}">
+                <span class="nav-icon">🏠</span>
+                Home
+            </a>
+            <a href="{{ url_for('study') }}" class="nav-link {% if request.endpoint == 'study' %}active{% endif %}">
+                <span class="nav-icon">📚</span>
+                Study
+            </a>
+            <a href="{{ url_for('data') }}" class="nav-link {% if request.endpoint == 'data' %}active{% endif %}">
+                <span class="nav-icon">📊</span>
+                Data
+            </a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div class="main-container">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        // Dashboard toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const dashboardToggle = document.getElementById('dashboard-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+
+            if (dashboardToggle && sidebar && mainContent) {
+                dashboardToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('sidebar-hidden');
+                    mainContent.classList.toggle('sidebar-open');
+                });
+
+                // Close sidebar when clicking outside on mobile
+                document.addEventListener('click', function(e) {
+                    if (window.innerWidth <= 768 &&
+                        !sidebar.contains(e.target) &&
+                        !dashboardToggle.contains(e.target) &&
+                        !sidebar.classList.contains('sidebar-hidden')) {
+                        sidebar.classList.add('sidebar-hidden');
+                        mainContent.classList.remove('sidebar-open');
+                    }
+                });
+            }
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

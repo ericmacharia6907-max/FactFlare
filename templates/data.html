@@ -1,0 +1,428 @@
+{% extends "base.html" %}
+
+{% block title %}Data Management - FactFlare{% endblock %}
+
+{% block content %}
+<div class="data-page">
+
+    <!-- Deck Management -->
+    <div class="data-section">
+        <h2>Deck Management</h2>
+        <div class="deck-management">
+            <div class="upload-section">
+                <h3>Upload New Deck</h3>
+                <form id="upload-form" enctype="multipart/form-data">
+                    <div class="file-input-container">
+                        <input type="file" id="file-input" name="file" accept=".json" class="file-input">
+                        <label for="file-input" class="file-label">Choose JSON file</label>
+                    </div>
+                    <button type="submit" class="btn">Upload Deck</button>
+                </form>
+            </div>
+
+            <div class="deck-library">
+                <h3>Saved Decks</h3>
+                <div id="deck-list" class="deck-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tag Management -->
+    <div class="data-section">
+        <h2>Tag Management</h2>
+        <div class="tag-management">
+            <div class="tag-section">
+                <h3>Manage Current Fact Tags</h3>
+                <div id="current-fact-info" class="current-fact-info">
+                    <p id="current-fact-text">No fact currently loaded</p>
+                    <div id="fact-tags" class="tag-display"></div>
+                </div>
+                <div class="tag-input-section">
+                    <input type="text" id="tag-input" placeholder="Add tags (comma separated)">
+                    <button id="add-tags" class="btn">Add Tags</button>
+                </div>
+            </div>
+
+            <div class="tag-section">
+                <h3>Filter by Tags</h3>
+                <div id="tag-list" class="tag-filter-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Section -->
+    <div class="data-section">
+        <h2>Study Analytics</h2>
+        <div class="analytics-section">
+            <div id="study-stats">
+                <h3>Deck Statistics</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">Total Facts:</span>
+                        <span id="total-facts" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Reviewed Facts:</span>
+                        <span id="reviewed-facts" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Due for Review:</span>
+                        <span id="due-facts" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">New Facts:</span>
+                        <span id="new-facts" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Avg Ease Factor:</span>
+                        <span id="avg-ease" class="stat-value">2.5</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="recent-sessions">
+                <h3>Recent Study Sessions</h3>
+                <div id="sessions-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievements Section -->
+    <div class="data-section">
+        <h2>Achievements & Progress</h2>
+        <div class="achievements-section">
+            <div id="progress-stats">
+                <div class="stat-item">
+                    <span class="stat-label">XP:</span>
+                    <span id="xp-display" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Current Streak:</span>
+                    <span id="streak-display" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Facts Viewed:</span>
+                    <span id="facts-display" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Decks Loaded:</span>
+                    <span id="decks-display" class="stat-value">0</span>
+                </div>
+            </div>
+
+            <div id="achievements-list">
+                <h3>Your Achievements</h3>
+                <div id="user-achievements"></div>
+            </div>
+
+            <div id="available-achievements">
+                <h3>Available Achievements</h3>
+                <div id="all-achievements"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Section -->
+    <div class="data-section">
+        <h2>Export Data</h2>
+        <div class="export-section">
+            <button id="export-btn" class="btn">Export Current Deck</button>
+        </div>
+    </div>
+
+    <div id="status" class="status"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Load deck list
+function loadDeckList() {
+    fetch('/list_decks')
+        .then(response => response.json())
+        .then(decks => {
+            const deckList = document.getElementById('deck-list');
+            deckList.innerHTML = '';
+
+            if (decks.length === 0) {
+                deckList.innerHTML = '<p>No decks saved yet.</p>';
+                return;
+            }
+
+            decks.forEach(deck => {
+                const deckItem = document.createElement('div');
+                deckItem.className = 'deck-item';
+                deckItem.innerHTML = `
+                    <span class="deck-name">${deck.name}</span>
+                    <div class="deck-actions">
+                        <button class="btn small" onclick="loadDeck('${deck.name}')">Load</button>
+                        <button class="btn small danger" onclick="deleteDeck('${deck.name}')">Delete</button>
+                    </div>
+                `;
+                deckList.appendChild(deckItem);
+            });
+        })
+        .catch(error => console.error('Error loading decks:', error));
+}
+
+// Load deck function
+function loadDeck(deckName) {
+    fetch(`/get_deck/${deckName}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('status').textContent = `Loaded deck: ${deckName}`;
+                // Update current deck info for tag management
+                updateCurrentFactInfo();
+            } else {
+                document.getElementById('status').textContent = 'Error loading deck';
+            }
+        })
+        .catch(error => console.error('Error loading deck:', error));
+}
+
+// Delete deck function
+function deleteDeck(deckName) {
+    if (confirm(`Are you sure you want to delete the deck "${deckName}"?`)) {
+        fetch(`/delete_deck/${deckName}`, { method: 'DELETE' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('status').textContent = `Deleted deck: ${deckName}`;
+                    loadDeckList();
+                } else {
+                    document.getElementById('status').textContent = 'Error deleting deck';
+                }
+            })
+            .catch(error => console.error('Error deleting deck:', error));
+    }
+}
+
+// Update current fact info for tag management
+function updateCurrentFactInfo() {
+    fetch('/get_status')
+        .then(response => response.json())
+        .then(data => {
+            const currentFactInfo = document.getElementById('current-fact-info');
+            if (data.current_fact) {
+                document.getElementById('current-fact-text').textContent = data.current_fact.content || 'No fact loaded';
+                loadFactTags(data.current_fact.id);
+            } else {
+                document.getElementById('current-fact-text').textContent = 'No fact currently loaded';
+                document.getElementById('fact-tags').innerHTML = '';
+            }
+        })
+        .catch(error => console.error('Error getting status:', error));
+}
+
+// Load fact tags
+function loadFactTags(factId) {
+    fetch(`/get_fact_details/${factId}`)
+        .then(response => response.json())
+        .then(data => {
+            const tagsContainer = document.getElementById('fact-tags');
+            tagsContainer.innerHTML = '';
+
+            if (data.tags && data.tags.length > 0) {
+                data.tags.forEach(tag => {
+                    const tagElement = document.createElement('span');
+                    tagElement.className = 'tag';
+                    tagElement.textContent = tag;
+                    tagsContainer.appendChild(tagElement);
+                });
+            } else {
+                tagsContainer.innerHTML = '<span class="no-tags">No tags</span>';
+            }
+        })
+        .catch(error => console.error('Error loading fact tags:', error));
+}
+
+// Load available tags for filtering
+function loadAvailableTags() {
+    fetch('/get_tags')
+        .then(response => response.json())
+        .then(tags => {
+            const tagList = document.getElementById('tag-list');
+            tagList.innerHTML = '';
+
+            if (tags.length === 0) {
+                tagList.innerHTML = '<p>No tags available.</p>';
+                return;
+            }
+
+            tags.forEach(tag => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'tag-filter';
+                tagElement.textContent = tag;
+                tagElement.onclick = () => filterByTag(tag);
+                tagList.appendChild(tagElement);
+            });
+        })
+        .catch(error => console.error('Error loading tags:', error));
+}
+
+// Filter by tag
+function filterByTag(tag) {
+    fetch(`/get_facts_by_tag/${tag}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('status').textContent = `Filtered by tag: ${tag} (${data.facts.length} facts)`;
+        })
+        .catch(error => console.error('Error filtering by tag:', error));
+}
+
+// Load analytics data
+function loadAnalytics() {
+    fetch('/get_study_stats')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('total-facts').textContent = data.total_facts || 0;
+            document.getElementById('reviewed-facts').textContent = data.reviewed_facts || 0;
+            document.getElementById('due-facts').textContent = data.due_facts || 0;
+            document.getElementById('new-facts').textContent = data.new_facts || 0;
+            document.getElementById('avg-ease').textContent = data.avg_ease?.toFixed(2) || '2.50';
+        })
+        .catch(error => console.error('Error loading analytics:', error));
+}
+
+// Load achievements
+function loadAchievements() {
+    fetch('/get_progress')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('xp-display').textContent = data.total_xp || 0;
+            document.getElementById('streak-display').textContent = data.current_streak || 0;
+            document.getElementById('facts-display').textContent = data.total_facts_viewed || 0;
+            document.getElementById('decks-display').textContent = data.decks_loaded || 0;
+        })
+        .catch(error => console.error('Error loading progress:', error));
+
+    fetch('/get_user_achievements')
+        .then(response => response.json())
+        .then(data => {
+            const userAchievements = document.getElementById('user-achievements');
+            userAchievements.innerHTML = '';
+
+            data.achievements.forEach(achievement => {
+                const achievementElement = document.createElement('div');
+                achievementElement.className = 'achievement-item unlocked';
+                achievementElement.innerHTML = `
+                    <div class="achievement-icon">${achievement.icon}</div>
+                    <div class="achievement-name">${achievement.name}</div>
+                    <div class="achievement-desc">${achievement.description}</div>
+                    <div class="achievement-xp">+${achievement.xp_reward} XP</div>
+                `;
+                userAchievements.appendChild(achievementElement);
+            });
+        })
+        .catch(error => console.error('Error loading user achievements:', error));
+
+    fetch('/get_achievements')
+        .then(response => response.json())
+        .then(data => {
+            const allAchievements = document.getElementById('all-achievements');
+            allAchievements.innerHTML = '';
+
+            data.achievements.forEach(achievement => {
+                const achievementElement = document.createElement('div');
+                achievementElement.className = `achievement-item ${achievement.unlocked ? 'unlocked' : 'locked'}`;
+                achievementElement.innerHTML = `
+                    <div class="achievement-icon">${achievement.icon}</div>
+                    <div class="achievement-name">${achievement.name}</div>
+                    <div class="achievement-desc">${achievement.description}</div>
+                    <div class="achievement-xp">+${achievement.xp_reward} XP</div>
+                `;
+                allAchievements.appendChild(achievementElement);
+            });
+        })
+        .catch(error => console.error('Error loading achievements:', error));
+}
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    loadDeckList();
+    loadAvailableTags();
+    loadAnalytics();
+    loadAchievements();
+    updateCurrentFactInfo();
+
+    // Upload form handler
+    document.getElementById('upload-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('status').textContent = data.message;
+            if (data.success) {
+                loadDeckList();
+            }
+        })
+        .catch(error => console.error('Error uploading:', error));
+    });
+
+    // Add tags handler
+    document.getElementById('add-tags').addEventListener('click', function() {
+        const tagInput = document.getElementById('tag-input');
+        const tags = tagInput.value.trim();
+
+        if (!tags) {
+            document.getElementById('status').textContent = 'Please enter tags to add';
+            return;
+        }
+
+        fetch('/get_status')
+            .then(response => response.json())
+            .then(data => {
+                if (data.current_fact && data.current_fact.id) {
+                    fetch(`/update_fact_tags/${data.current_fact.id}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ tags: tags })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('status').textContent = data.message;
+                        tagInput.value = '';
+                        updateCurrentFactInfo();
+                        loadAvailableTags();
+                    })
+                    .catch(error => console.error('Error updating tags:', error));
+                } else {
+                    document.getElementById('status').textContent = 'No fact currently loaded';
+                }
+            })
+            .catch(error => console.error('Error getting current fact:', error));
+    });
+
+    // Export handler
+    document.getElementById('export-btn').addEventListener('click', function() {
+        fetch('/export')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const blob = new Blob([JSON.stringify(data.deck, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'exported_deck.json';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    document.getElementById('status').textContent = 'Deck exported successfully';
+                } else {
+                    document.getElementById('status').textContent = 'Error exporting deck';
+                }
+            })
+            .catch(error => console.error('Error exporting:', error));
+    });
+});
+</script>
+{% endblock %}

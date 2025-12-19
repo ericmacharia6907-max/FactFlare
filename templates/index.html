@@ -11,34 +11,176 @@
     <h1>FactFlare</h1>
     <div class="container">
         <div class="card" id="card">
-            <p id="fact-text">Click to load a deck and start</p>
+            <div class="card-inner">
+                <div class="card-front">
+                    <p id="fact-text"></p>
+                    <div id="fact-image" class="fact-image hidden"></div>
+                </div>
+                <div class="card-back">
+                    <p id="fact-text-back"></p>
+                    <div id="fact-image-back" class="fact-image hidden"></div>
+                </div>
+            </div>
         </div>
-        <form id="upload-form" enctype="multipart/form-data">
-            <input type="file" id="file-input" name="file" accept=".json">
-            <button type="submit">Upload Deck</button>
-        </form>
-        <button id="load-sample-btn">Load Sample Deck</button>
-        <button id="export-btn">Export Deck</button>
-        <button id="share-btn">Share Fact</button>
-        <button id="stats-btn">View Stats</button>
-        <div id="progress">
-            <div>Facts viewed: 0 / 0</div>
+
+        <!-- Answer Quality Buttons (for Spaced Repetition) -->
+        <div id="answer-buttons" class="answer-buttons hidden">
+            <p>How well did you know this?</p>
+            <div class="quality-buttons">
+                <button class="quality-btn" data-quality="0">Complete Blackout</button>
+                <button class="quality-btn" data-quality="1">Incorrect (hard)</button>
+                <button class="quality-btn" data-quality="2">Incorrect (easy)</button>
+                <button class="quality-btn" data-quality="3">Correct (difficult)</button>
+                <button class="quality-btn" data-quality="4">Correct (easy)</button>
+                <button class="quality-btn" data-quality="5">Perfect Response</button>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="load-sample-btn" class="btn glow-btn">Load Sample Deck</button>
+            <button id="shuffle-btn" class="btn glow-btn">Shuffle: Off</button>
+            <button id="export-btn" class="btn glow-btn">Export Deck</button>
+            <button id="share-btn" class="btn glow-btn">Share Fact</button>
+            <button id="speak-btn" class="btn glow-btn">🔊 Speak</button>
+        </div>
+
+        <!-- Study Mode Selection -->
+        <div class="study-modes">
+            <h4>Study Mode:</h4>
+            <div class="mode-buttons">
+                <button id="mode-spaced" class="mode-btn active" data-mode="spaced">Spaced Repetition</button>
+                <button id="mode-review" class="mode-btn" data-mode="review">Review All</button>
+                <button id="mode-cram" class="mode-btn" data-mode="cram">Cram Mode</button>
+                <button id="mode-random" class="mode-btn" data-mode="random">Random</button>
+            </div>
+        </div>
+
+        <!-- Custom Session Controls -->
+        <div class="session-controls">
+            <button id="toggle-session" class="btn glow-btn">Custom Session</button>
+            <div id="session-panel" class="hidden">
+                <div class="session-options">
+                    <label>Fact Limit: <input type="number" id="fact-limit" min="1" placeholder="No limit"></label>
+                    <label>Time Limit (min): <input type="number" id="time-limit" min="1" placeholder="No limit"></label>
+                    <label>Filter by Tags: <input type="text" id="tag-filter" placeholder="tag1,tag2"></label>
+                </div>
+                <button id="start-session" class="btn glow-btn">Start Session</button>
+                <button id="end-session" class="btn glow-btn hidden">End Session</button>
+                <div id="session-progress" class="session-progress hidden"></div>
+            </div>
+        </div>
+
+        <!-- Tag Management -->
+        <div class="tag-management">
+            <button id="toggle-tags" class="btn glow-btn">Manage Tags</button>
+            <div id="tags-panel" class="hidden">
+                <div class="current-tags">
+                    <h4>Current Fact Tags:</h4>
+                    <div id="fact-tags"></div>
+                    <input type="text" id="tag-input" placeholder="Add tags (comma separated)">
+                    <button id="add-tags" class="btn glow-btn">Add Tags</button>
+                </div>
+                <div class="available-tags">
+                    <h4>Filter by Tags:</h4>
+                    <div id="tag-list"></div>
+                </div>
+            </div>
+        </div>
+        <div class="progress">
+            <div>Facts viewed: <span id="viewed-count">0</span> / <span id="total-count">0</span></div>
             <div class="progress-bar">
                 <div class="progress-fill" id="progress-fill"></div>
             </div>
         </div>
-        <div id="deck-library" style="display:none;">
-            <h4>Saved Decks</h4>
-            <div id="deck-list"></div>
+        <div class="deck-management">
+            <button id="toggle-deck-mgmt" class="btn glow-btn">Deck Management</button>
+            <div id="deck-mgmt-panel" class="hidden">
+                <form id="upload-form" enctype="multipart/form-data">
+                    <input type="file" id="file-input" name="file" accept=".json" class="file-input">
+                    <button type="submit" class="btn glow-btn">Upload Deck</button>
+                </form>
+                <div id="deck-library">
+                    <h4>Saved Decks</h4>
+                    <div id="deck-list"></div>
+                </div>
+            </div>
         </div>
-        <button id="toggle-deck-library">Toggle Deck Library</button>
-        <div id="stats" style="display:none;"></div>
-        <div id="theme-switcher">
-            <button id="theme-classic">Classic</button>
-            <button id="theme-dark">Dark</button>
-            <button id="theme-neon">Neon</button>
+        <div class="achievements-section">
+            <button id="toggle-achievements" class="btn glow-btn">Achievements & Progress</button>
+            <div id="achievements-panel" class="hidden">
+                <div id="progress-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">XP:</span>
+                        <span id="xp-display" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Current Streak:</span>
+                        <span id="streak-display" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Facts Viewed:</span>
+                        <span id="facts-display" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Decks Loaded:</span>
+                        <span id="decks-display" class="stat-value">0</span>
+                    </div>
+                </div>
+                <div id="achievements-list">
+                    <h4>Your Achievements</h4>
+                    <div id="user-achievements"></div>
+                </div>
+                <div id="available-achievements">
+                    <h4>Available Achievements</h4>
+                    <div id="all-achievements"></div>
+                </div>
+            </div>
         </div>
-        <div id="status"></div>
+
+        <!-- Analytics Section -->
+        <div class="analytics-section">
+            <button id="toggle-analytics" class="btn glow-btn">Study Analytics</button>
+            <div id="analytics-panel" class="hidden">
+                <div id="study-stats">
+                    <h4>Deck Statistics</h4>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Facts:</span>
+                            <span id="total-facts" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Reviewed Facts:</span>
+                            <span id="reviewed-facts" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Due for Review:</span>
+                            <span id="due-facts" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">New Facts:</span>
+                            <span id="new-facts" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Avg Ease Factor:</span>
+                            <span id="avg-ease" class="stat-value">2.5</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="recent-sessions">
+                    <h4>Recent Study Sessions</h4>
+                    <div id="sessions-list"></div>
+                </div>
+            </div>
+        </div>
+        <div id="status" class="status"></div>
+        <div id="achievement-notification" class="achievement-popup hidden">
+            <div class="achievement-content">
+                <div id="achievement-icon">🎉</div>
+                <h3 id="achievement-title">Achievement Unlocked!</h3>
+                <p id="achievement-desc">Description</p>
+                <span id="achievement-xp">+10 XP</span>
+            </div>
+        </div>
     </div>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
