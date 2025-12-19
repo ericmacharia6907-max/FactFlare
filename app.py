@@ -270,7 +270,10 @@ def upload():
                 # Check if deck already exists
                 existing_deck = Deck.query.filter_by(name=data['deckName']).first()
                 if existing_deck:
-                    return jsonify({'status': 'error', 'message': 'Deck with this name already exists'})
+                    # Delete existing deck and its facts
+                    Fact.query.filter_by(deck_id=existing_deck.id).delete()
+                    db.session.delete(existing_deck)
+                    db.session.commit()
                 
                 # Create new deck
                 new_deck = Deck(name=data['deckName'])

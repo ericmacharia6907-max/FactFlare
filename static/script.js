@@ -58,6 +58,7 @@ function initializeStudyPage() {
     if (shareBtn) shareBtn.addEventListener('click', shareFact);
     if (shuffleBtn) shuffleBtn.addEventListener('click', toggleShuffle);
     if (speakBtn) speakBtn.addEventListener('click', speakFact);
+    if (exportBtn) exportBtn.addEventListener('click', exportDeck);
     if (toggleSessionBtn) toggleSessionBtn.addEventListener('click', toggleSession);
 
     // Study mode event listeners
@@ -911,6 +912,29 @@ async function handleUpload(e) {
         }
     } catch (error) {
         statusDiv.textContent = 'Error uploading file';
+    }
+}
+
+async function exportDeck() {
+    try {
+        const response = await fetch('/export');
+        const data = await response.json();
+        if (data.error) {
+            statusDiv.textContent = 'No deck loaded to export';
+            return;
+        }
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${data.deckName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        statusDiv.textContent = 'Deck exported successfully';
+    } catch (error) {
+        statusDiv.textContent = 'Error exporting deck';
     }
 }
 

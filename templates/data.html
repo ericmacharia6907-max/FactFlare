@@ -406,22 +406,25 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch('/export')
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    const blob = new Blob([JSON.stringify(data.deck, null, 2)], { type: 'application/json' });
+                if (data.error) {
+                    document.getElementById('status').textContent = 'Error: ' + data.error;
+                } else {
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = 'exported_deck.json';
+                    a.download = data.deckName.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.json';
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
                     document.getElementById('status').textContent = 'Deck exported successfully';
-                } else {
-                    document.getElementById('status').textContent = 'Error exporting deck';
                 }
             })
-            .catch(error => console.error('Error exporting:', error));
+            .catch(error => {
+                console.error('Error exporting:', error);
+                document.getElementById('status').textContent = 'Error exporting deck';
+            });
     });
 });
 </script>
