@@ -14,6 +14,19 @@ document.addEventListener('DOMContentLoaded', function() {
     if (uploadForm) {
         uploadForm.addEventListener('submit', handleUpload);
     }
+
+    // Display selected file name
+    const fileInput = document.getElementById('file-input');
+    const statusDiv = document.getElementById('status');
+    if (fileInput && statusDiv) {
+        fileInput.addEventListener('change', function() {
+            if (fileInput.files.length > 0) {
+                statusDiv.textContent = `Selected file: ${fileInput.files[0].name}`;
+            } else {
+                statusDiv.textContent = '';
+            }
+        });
+    }
 });
 
 function initializeCommonFeatures() {
