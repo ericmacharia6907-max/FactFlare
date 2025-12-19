@@ -1,5 +1,14 @@
 const uploadForm = document.getElementById('upload-form');
 const statusDiv = document.getElementById('status');
+const fileInput = document.getElementById('file-input');
+
+fileInput.addEventListener('change', function() {
+    if (fileInput.files.length > 0) {
+        statusDiv.textContent = `Selected file: ${fileInput.files[0].name}`;
+    } else {
+        statusDiv.textContent = '';
+    }
+});
 
 uploadForm.addEventListener('submit', handleUpload);
 
